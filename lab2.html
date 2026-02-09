@@ -114,13 +114,11 @@
         /* Use Grid to create a strict 3-column layout for the photo gallery */
         .gallery-grid {
             /* TODO 4.1: Activate Grid layout */
-            /* display: ... */
-
+            display:grid;
             /* TODO 4.2: Create 3 equal columns */
-            /* grid-template-columns: ... (Hint: use '1fr 1fr 1fr' or 'repeat(3, 1fr)') */
-
+            grid-template-columns: repeat(3, 1fr);
             /* TODO 4.3: Add a 15px gap between all rows and columns */
-            /* gap: ... */
+            gap: 15px;
         }
 
         .gallery-item {
@@ -136,23 +134,15 @@
         */
         .layout-challenge {
             height: 400px; /* Fixed height for demo */
-            
-            /* TODO 5.1: Turn on Grid */
-            /* display: ... */
-
+            display: grid;
             /* TODO 5.2: Set up columns: Sidebar (200px) and Content (rest of space) */
-            /* grid-template-columns: ... */
-
+            grid-template-columns: 200px 1fr;
             /* TODO 5.3: Set up rows: Header (60px), Main Content (auto/flexible), Footer (60px) */
-            /* grid-template-rows: ... */
-
+            grid-template-rows: 60px auto 60px;
             /* TODO 5.4: Assign areas using grid-template-areas */
-            /* Hint:
-               "header header"
-               "sidebar main"
-               "footer footer"
-            */
-            
+             grid-template-areas: "header header"
+                                 "sidebar main"
+                                 "footer footer";
             gap: 10px;
         }
 
