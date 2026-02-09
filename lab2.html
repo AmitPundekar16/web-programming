@@ -169,8 +169,15 @@
             width: 200px; 
             height: 50px;
             line-height: 30px; /* Centers text vertically if height matches line-height approximately */
-            
+            text-align: center;
+            border-radius: 20px;
+            cursor: pointer;
             /* HINT: <span> is an 'inline' element by default. Inline elements hate dimensions. */
+            display: block; 
+            width: 200px;
+            height: 50px;
+            line-height: 30px;
+            display:inline-block;
         }
 
         /* Bug 2: The Exploding Image
@@ -186,7 +193,8 @@
         
         .bug-img {
             /* TODO 6.2: Ensure the image never exceeds the width of its parent container. */
-            
+            max-width: 100%;
+            height: auto; 
         }
 
         /* Bug 3: The Hidden Message
@@ -210,7 +218,7 @@
             box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
             
             /* TODO 6.3: Bring this element to the front */
-            
+            z-index: 10;
         }
 
         .bug-blocker {
