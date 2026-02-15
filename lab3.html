@@ -173,8 +173,7 @@
             /* TODO 2.1: Fix Contrast */
             /* Current: #ccc background with white text fails WCAG (Web Content Accessibility Guidelines). */
             /* Change background-color to a darker blue (e.g., #0d6efd) */
-            background-color: #ccc; 
-            
+            background-color: darkblue; 
             color: white; border: none; padding: 10px 20px;
             font-size: 1rem; cursor: pointer; border-radius: 4px;
         }
@@ -183,6 +182,10 @@
         /* Target .btn-accessible using pseudo-class */
         /* Add outline and outline-offset - This helps keyboard users see where they are. */
 
+        .btn-accessible:focus {
+        outline: 3px solid #f20808;
+        outline-offset: 3px;
+        }
 
         /* --- TASK 3: ANIMATION --- */
 
@@ -305,12 +308,14 @@
             <hr>
             <p><strong>Subtask 2.3: ARIA Labels.</strong> The button below only contains an icon (X). A screen reader doesn't know what it does. Add an <code>aria-label="Close"</code> attribute to the HTML tag below.</p>
             
-            <button style="padding: 5px 10px; font-weight: bold;">&times;</button>
+            <button aria-label="Close" style="padding: 5px 10px; font-weight: bold;">
+                 &times;
+            </button>
 
             <hr>
             <p><strong>Subtask 2.4: Alt Text.</strong> The image below is missing an alt attribute. Add <code>alt="A cute kitten"</code> so screem readers can pick up the image description.</p>
             
-            <img src="https://placehold.co/100x100/0077B5/ffffff.jpg?text=LinkedIn%20Post&font=ubuntu" style="border-radius: 8px;">
+            <img src="https://placehold.co/100x100/0077B5/ffffff.jpg?text=LinkedIn%20Post&font=ubuntu" style="border-radius: 8px;" alt="A cute kitten">
         </div>
     </section>
 
