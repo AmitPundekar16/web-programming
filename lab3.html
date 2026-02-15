@@ -191,9 +191,9 @@
 
         /* 3.1 Hover Transition */
         .anim-card {
-            background: white; border: 1px solid #ddd; padding: 20px;
+            background: rgb(215, 76, 76); border: 1px solid #ddd; padding: 20px;
             width: 150px; text-align: center; cursor: pointer;
-            
+            transition: transform 0.3s ease;
             /* TODO 3.1: Add Transition */
             /* Add 'transition: transform 0.3s ease;' */
         }
@@ -201,7 +201,9 @@
         
         /* TODO 3.1 (Cont): Add Transform to .anim-card on Hover */
         /* Add 'transform: scale(1.1);' */
-
+        .anim-card:hover{
+            transform: scale(1.5);
+        }
 
         /* 3.2 Loading Spinner Keyframes */
         .spinner {
@@ -214,12 +216,17 @@
         /* TODO 3.2: Define Keyframes */
         /* Create @keyframes named 'spin' */
         /* 0% { transform: rotate(0deg); }  ->  100% { transform: rotate(360deg); } */
-
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
 
         /* TODO 3.3: Apply Animation */
         /* Target .spinner class above (or write a new rule) */
         /* Add 'animation: spin 1s linear infinite;' */
-
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
 
         /* TODO 3.4: Pulse Animation */
         .pulse-circle {
@@ -227,6 +234,13 @@
         }
         /* Define @keyframes named 'pulse' that changes opacity from 1 to 0.5 */
         /* Apply it to .pulse-circle with 1s duration, infinite alternate */
+        @keyframes pulse {
+            0% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+        .pulse-circle {
+            animation: pulse 1s infinite alternate;
+        }
 
     </style>
 </head>
