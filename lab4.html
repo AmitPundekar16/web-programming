@@ -443,7 +443,10 @@ document.getElementById('password').addEventListener('input', function(event) {
 
 
         // TASK 2, 3, 6: Form submit event handler with validation
-
+        form.addEventListener('submit', function(event) {
+        event.preventDefault();  
+        console.log('Form submission intercepted!');
+    });
 
         // TASK 7: Real-time validation (optional enhancement)
 
