@@ -437,7 +437,14 @@ document.getElementById('password').addEventListener('input', function(event) {
         console.log('Form element:', form);
 
         // TASK 4: Validation helper functions (arrow functions)
-
+        const isEmpty = (value) => value === '';
+        const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        const isValidPassword = (password) => password.length >= 8;
+        const doPasswordsMatch = (pass1, pass2) => pass1 === pass2;
+        console.log('isEmpty test:', isEmpty(''));           // true
+        console.log('isEmpty test:', isEmpty('hello'));      // false
+        console.log('Email test:', isValidEmail('a@b.com')); // true
+        console.log('Email test:', isValidEmail('invalid')); // false
 
         // TASK 5: Show/Clear error functions
 
@@ -450,15 +457,10 @@ document.getElementById('password').addEventListener('input', function(event) {
 
     form.addEventListener('submit', function(event) {
     event.preventDefault();
-
-    // Get input values using .value property
-    // .trim() removes whitespace from start and end of string
     const username = document.getElementById('username').value.trim();
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
     const confirmPassword = document.getElementById('confirmPassword').value;
-
-    // Log values to verify (check browser console)
     console.log('Username:', username);
     console.log('Email:', email);
     console.log('Password length:', password.length);
