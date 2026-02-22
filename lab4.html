@@ -447,6 +447,34 @@ document.getElementById('password').addEventListener('input', function(event) {
         console.log('Email test:', isValidEmail('invalid')); // false
 
         // TASK 5: Show/Clear error functions
+            const showError = (fieldId, message) => {
+            // Find the error div (we named them fieldId + '-error')
+            const errorDiv = document.getElementById(fieldId + '-error');
+            errorDiv.textContent = message;
+
+            // Also highlight the input field with red border
+            const inputField = document.getElementById(fieldId);
+            inputField.style.borderColor = '#e74c3c';
+        };
+
+        // Clear the error message for a specific field
+        const clearError = (fieldId) => {
+            const errorDiv = document.getElementById(fieldId + '-error');
+            errorDiv.textContent = '';
+
+            // Reset border to default
+            const inputField = document.getElementById(fieldId);
+            inputField.style.borderColor = 'green';
+        };
+
+        // Clear all error messages
+        const clearAllErrors = () => {
+            // Array of all field IDs - we loop through each one
+            ['username', 'email', 'password', 'confirmPassword'].forEach(fieldId => {
+                clearError(fieldId);
+            });
+            document.getElementById('success-message').textContent = '';
+        };
 
 
         // TASK 2, 3, 6: Form submit event handler with validation
@@ -465,6 +493,69 @@ document.getElementById('password').addEventListener('input', function(event) {
     console.log('Email:', email);
     console.log('Password length:', password.length);
     });
+
+
+    form.addEventListener('submit', function(event) {
+    event.preventDefault();
+    clearAllErrors();
+
+    // Get all input values
+    const username = document.getElementById('username').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+
+    // Track if form is valid
+    let isFormValid = true;
+
+    // Validate Username: required, at least 3 characters
+    if (isEmpty(username)) {
+        showError('username', 'Username is required');
+        isFormValid = false;
+    } else if (username.length < 3) {
+        showError('username', 'Username must be at least 3 characters');
+        isFormValid = false;
+    }
+
+    // Validate Email: required, valid email format
+    if (isEmpty(email)) {
+        showError('email', 'Email is required');
+        isFormValid = false;
+    } else if (!isValidEmail(email)) {
+        showError('email', 'Please enter a valid email address');
+        isFormValid = false;
+    }
+
+    // Validate Password: required, at least 6 characters
+    if (isEmpty(password)) {
+        showError('password', 'Password is required');
+        isFormValid = false;
+    } else if (password.length < 6) {
+        showError('password', 'Password must be at least 6 characters');
+        isFormValid = false;
+    }
+
+    // Validate Confirm Password: required, must match password
+    if (isEmpty(confirmPassword)) {
+        showError('confirmPassword', 'Please confirm your password');
+        isFormValid = false;
+    } else if (password !== confirmPassword) {
+        showError('confirmPassword', 'Passwords do not match');
+        isFormValid = false;
+    }
+
+    // If all validations passed, show success
+    if (isFormValid) {
+        const successMessage = document.getElementById('success-message');
+        successMessage.textContent = 'Registration successful!';
+        successMessage.style.color = 'green';
+        successMessage.style.display = 'block';
+
+        //form.reset(); // Optional: reset form fields
+    }
+});
+
+
 
         // TASK 7: Real-time validation (optional enhancement)
 
