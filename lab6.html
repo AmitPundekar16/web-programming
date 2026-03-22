@@ -544,8 +544,7 @@ form.addEventListener('submit', async function(event) {
         // PART B — deletePost(id):
         //   Send a fetch with method: 'DELETE' for the given id.
         //   If response.ok, remove the card from the DOM with .remove().
-
-        async function loadPosts() {
+   async function loadPosts() {
             const output = document.getElementById('task3-output');
             output.innerHTML = '<p class="loading">Loading posts...</p>';
 
@@ -592,42 +591,8 @@ form.addEventListener('submit', async function(event) {
 
             }
         );
-        // ============================================================
-        // TASK 2: UPDATE A POST (PUT REQUEST)
-        // ============================================================
-        // Load endpoint: GET  https://jsonplaceholder.typicode.com/posts/1
-        // Save endpoint: PUT  https://jsonplaceholder.typicode.com/posts/1
-        // Load button: task2-load-btn  |  Form: task2-form  |  Output div: task2-output
-        //
-        // PART A — loadPost():
-        //   Wire the load button. Fetch post #1 (GET), fill the form
-        //   fields (t2-title, t2-body) with the response data, and
-        //   make the hidden form visible (style.display = 'flex').
-        //
-        // PART B — submit handler for task2-form:
-        //   Listen for 'submit', prevent default, read the edited values,
-        //   and send them back with method: 'PUT'. Display the server's
-        //   response in a response-box div.
-
-
-
-        // ============================================================
-        // TASK 3: DELETE A POST AND UPDATE THE PAGE
-        // ============================================================
-        // List endpoint:   GET    https://jsonplaceholder.typicode.com/posts?_limit=5
-        // Delete endpoint: DELETE https://jsonplaceholder.typicode.com/posts/{id}
-        // Load button: task3-load-btn  |  Output div: task3-output
-        //
-        // PART A — loadPosts():
-        //   Wire the load button. Fetch 5 posts, use .map() to build
-        //   a comment-card for each (give each card an id like "post-3"),
-        //   and add a Delete button that calls deletePost(id).
-        //
-        // PART B — deletePost(id):
-        //   Send a fetch with method: 'DELETE' for the given id.
-        //   If response.ok, remove the card from the DOM with .remove().
-
-
+      
+     
     </script>
 
     <hr class="section-divider">
