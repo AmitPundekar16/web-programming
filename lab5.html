@@ -324,7 +324,7 @@ document.getElementById('output').innerHTML = html;</code></pre>
         <div class="demo-area">
             <h4>Task 2 Output — Dog Image Grid</h4>
             <div id="task3-output">Click the button to load dogs.</div>
-            <button id="task3-btn">Load 12 Random Dogs</button>
+            <button id="task3-btn"  onclick="runTask2()">Load 12 Random Dogs</button>
         </div>
 
         <div class="todo">
@@ -450,14 +450,12 @@ document.getElementById('output').innerHTML = html;</code></pre>
         async function runTask1() {
             const output1 = document.getElementById('task2-output');
             output1.innerHTML = '<p class="loading">Fetching...</p>';
-
             try {
             const breedInput = document.getElementById('breed-input').value.trim();
             if (!breedInput) {
                 output1.innerHTML = '<p class="error">Please enter a breed name.</p>';
                 return;
             }
-
             // Fetch random image for breed
             const imageResponse = await fetch(
                 `https://dog.ceo/api/breed/${breedInput}/images/random`
@@ -519,7 +517,30 @@ document.getElementById('output').innerHTML = html;</code></pre>
         //   4. .join('') the cards and wrap in <div class="dog-grid">, set as output.innerHTML
 
         async function runTask2() {
+            const output2 = document.getElementById('task3-output');
+            output2.innerHTML = '<p class="loading">Fetching...</p>';
+            try {
+                const response1 = await fetch('https://dog.ceo/api/breeds/image/random/12');
+                if (!response1.ok) throw new Error('Failed to fetch dog images.');
+                const data = await response1.json();
+                const urls1 = data.message;
 
+                const cardsHtml = urls1.map(url => {
+                    const breed = url.split('/')[4].replace('-', ' ');
+                    return `
+                        <div class="dog-card">
+                            <img src="${url}" alt="${breed}">
+                            <h5>${breed}</h5>
+                            <p class="breed-label">Breed: ${breed}</p>
+                        </div>
+                    `;
+                }).join('');
+
+                output2.innerHTML = `<div class="dog-grid">${cardsHtml}</div>`;
+
+            } catch (error) {
+                output2.innerHTML = `<p class="error">❌ ${error.message}</p>`;
+            }
         }
 
 
