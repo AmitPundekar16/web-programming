@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab 5: Fetch API and JSON - Retrieving & Displaying Data from Public APIs</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.7;
+            padding: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: #f5f5f5;
+        }
+        h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; margin-bottom: 20px; }
+        h2 { color: #2980b9; margin-top: 30px; margin-bottom: 15px; }
+        h3 { color: #27ae60; margin-top: 20px; margin-bottom: 10px; }
+        .objective {
+            background-color: #e8f6f3;
+            padding: 15px;
+            border-left: 4px solid #1abc9c;
+            margin-bottom: 20px;
+        }
+        .task {
+            background-color: #fff;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .todo {
+            background-color: #fef9e7;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #f1c40f;
+            border-radius: 0 5px 5px 0;
+        }
+        .todo::before {
+            content: "📝 TODO: ";
+            font-weight: bold;
+            color: #d68910;
+        }
+        code {
+            background-color: #ecf0f1;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        pre {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 10px 0;
+            font-size: 0.9em;
+        }
+        pre code { background-color: transparent; color: inherit; padding: 0; }
+        .note {
+            background-color: #ebf5fb;
+            padding: 12px;
+            border-left: 4px solid #3498db;
+            margin: 10px 0;
+            font-size: 0.95em;
+        }
+        .note::before { content: "💡 "; font-weight: bold; }
+        .demo-area {
+            background-color: #fff;
+            padding: 20px;
+            border: 2px solid #3498db;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .demo-area h4 { color: #3498db; margin-bottom: 15px; }
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px 5px 5px 0;
+        }
+        button:hover { background-color: #2980b9; }
+        .section-divider {
+            border: none;
+            height: 2px;
+            background: linear-gradient(to right, #3498db, #2ecc71);
+            margin: 30px 0;
+        }
+        ol, ul { margin-left: 25px; margin-bottom: 10px; }
+        li { margin-bottom: 5px; }
+
+        /* Dog image card grid */
+        .dog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .dog-card {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            background: #fff;
+            text-align: center;
+            padding-bottom: 10px;
+            transition: transform 0.2s;
+        }
+        .dog-card:hover { transform: translateY(-4px); }
+        .dog-card img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            display: block;
+        }
+        .dog-card h5 {
+            color: #2c3e50;
+            font-size: 0.95em;
+            margin: 8px 6px 4px;
+            text-transform: capitalize;
+        }
+        .dog-card .breed-label {
+            font-size: 0.78em;
+            color: #888;
+            padding: 0 8px;
+        }
+
+        /* Single dog detail display */
+        .dog-detail {
+            display: flex;
+            gap: 25px;
+            align-items: flex-start;
+        }
+        .dog-detail .portrait {
+            flex-shrink: 0;
+        }
+        .dog-detail .portrait img {
+            width: 220px;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        .dog-detail .info { flex: 1; }
+        .dog-detail h4 {
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 1.3em;
+            text-transform: capitalize;
+        }
+        .dog-detail p { margin: 6px 0; font-size: 0.95em; color: #555; }
+
+        /* Breed tag badges */
+        .breed-badge {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            padding: 3px 12px;
+            border-radius: 12px;
+            font-size: 0.82em;
+            margin: 3px 3px 3px 0;
+            text-transform: capitalize;
+            font-weight: 500;
+        }
+
+        /* Sub-breed section */
+        .sub-breed-section {
+            margin-top: 20px;
+        }
+        .sub-breed-section h5 {
+            color: #2980b9;
+            font-size: 1em;
+            margin-bottom: 12px;
+        }
+
+        /* Search/select inputs */
+        input[type="text"], select {
+            padding: 10px 15px;
+            border: 2px solid #bdc3c7;
+            border-radius: 4px;
+            font-size: 14px;
+            width: 260px;
+        }
+        input[type="text"]:focus, select:focus { outline: none; border-color: #3498db; }
+
+        /* Loading & error */
+        .loading { color: #3498db; font-style: italic; padding: 10px 0; }
+        .error { color: #e74c3c; font-weight: bold; padding: 10px 0; }
+
+        /* Breed chain display */
+        .breed-chain {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        .breed-chain-item {
+            text-align: center;
+        }
+        .breed-chain-item img {
+            width: 110px;
+            height: 110px;
+            object-fit: cover;
+            border-radius: 8px;
+            display: block;
+        }
+        .breed-chain-item p {
+            font-size: 0.85em;
+            font-weight: bold;
+            text-transform: capitalize;
+            margin-top: 5px;
+            color: #2c3e50;
+        }
+        .chain-arrow {
+            font-size: 1.8em;
+            color: #bdc3c7;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Lab 5: Fetch API and JSON</h1>
+
+    <div class="objective">
+        <strong>Objective:</strong> To retrieve and display data from a public API using the JavaScript Fetch API and process JSON responses dynamically.
+    </div>
+
+    <hr class="section-divider">
+
+    <!-- ================================================================== -->
+    <!-- SECTION 1: FETCHING DATA FROM AN API                               -->
+    <!-- ================================================================== -->
+    <h2>Section 1: Fetching Data from an API</h2>
+
+    <!-- TASK 1 -->
+    <div class="task">
+        <h3>Example: How to Fetch Data Using an API</h3>
+
+        <div class="note">
+            <strong>API used in this lab:</strong> <a href="https://dog.ceo/dog-api/" target="_blank">Dog CEO API</a> — a free, open-source REST API serving random dog images organised by breed. No API key required. Base URL: <code>https://dog.ceo/api</code><br><br>
+            Every response from this API follows the same shape: <code>{ "message": &lt;the data&gt;, "status": "success" }</code>. Your data is always inside <code>data.message</code>.
+        </div>
+
+        <p>The code for this example is already written — open the <code>&lt;script&gt;</code> section and read through <code>runExample()</code> alongside its inline comments, then click the button below to see it run.</p>
+
+        <p>Notice the button below uses <code>onclick="runExample()"</code> — this is an <strong>event handler</strong> that calls the function whenever the button is clicked. In the tasks that follow, the buttons are left blank and wiring them up is part of your job.</p>
+
+        <div class="demo-area">
+            <h4>Demo — Fetch a Random Dog</h4>
+            <div id="task1-output">Click the button to fetch a random dog.</div>
+            <button onclick="runExample()">Fetch Random Dog</button>
+        </div>
+
+    </div>
+
+    <!-- TASK 1 -->
+    <div class="task">
+        <h3>Task 1: Fetch Images for a Specific Breed with Sub-breed Details</h3>
+        <p>Real APIs let you filter data using parameters in the URL. Here you'll fetch a random image for a <em>specific</em> breed, and separately fetch the breed's list of sub-breeds — both from different endpoints — then display them together.</p>
+
+        <p>This introduces two key patterns:</p>
+        <ul>
+            <li><strong>URL parameters via template literals</strong> — inserting a variable into the URL string</li>
+            <li><strong>Accessing different JSON shapes</strong> — one endpoint returns a string, another returns an array</li>
+        </ul>
+
+        <div class="demo-area">
+            <h4>Task 1 Output — Breed Detail</h4>
+            <div style="margin-bottom: 15px;">
+                <input type="text" id="breed-input" placeholder="Enter breed (e.g. hound)" value="hound">
+                <button id="task2-btn">Show Breed Detail</button>
+            </div>
+            <div id="task2-output">Enter a breed name and click "Show Breed Detail".</div>
+        </div>
+
+        <div class="todo">
+            Wire up the button: <code>document.getElementById('task2-btn').onclick = runTask1;</code>
+            <br><br>
+            Complete <code>runTask1()</code> — read the breed from the input, make two separate fetches for the image and sub-breed list, and display them together. See the script for a full guide.
+        </div>
+    </div>
+
+    <hr class="section-divider">
+
+    <!-- ================================================================== -->
+    <!-- SECTION 2: DYNAMICALLY POPULATING A WEBSITE FROM AN ARRAY          -->
+    <!-- ================================================================== -->
+    <h2>Section 2: Dynamically Populating a Website from an Array</h2>
+
+    <div class="task">
+        <h3>Rendering Arrays as HTML</h3>
+        <p>APIs usually return arrays of items. To display them on a webpage, we transform each item into an HTML string using <code>.map()</code>, combine them with <code>.join('')</code>, and insert them via <code>innerHTML</code>.</p>
+
+        <pre><code>// Pattern: Array of URLs → HTML image cards
+const urls = ["https://dog.ceo/.../img1.jpg", "https://dog.ceo/.../img2.jpg"];
+
+const html = urls.map(url => `
+    &lt;div class="dog-card"&gt;
+        &lt;img src="${url}" alt="dog"&gt;
+    &lt;/div&gt;
+`).join('');
+
+document.getElementById('output').innerHTML = html;</code></pre>
+
+        <p>With a larger API response, <code>data.message</code> is an array of URLs — you pick how many to display and what info to show per card.</p>
+
+        <div class="note">
+            <strong>.map() + .join('')</strong> is the standard pattern for rendering lists. <code>.map()</code> transforms each array item into an HTML string. <code>.join('')</code> glues them into one big string. Then <code>innerHTML</code> inserts it into the page.
+        </div>
+    </div>
+
+    <!-- TASK 2 -->
+    <div class="task">
+        <h3>Task 2: Display a Dog Image Grid</h3>
+        <p>The Dog CEO API can return multiple random images in one call. Here you'll fetch a batch, extract the breed name from each image URL, and render them all as cards in a CSS grid.</p>
+
+        <p>This practices the core pattern: <strong>one fetch → array in response → .map() into HTML cards → grid display</strong>.</p>
+
+        <div class="demo-area">
+            <h4>Task 2 Output — Dog Image Grid</h4>
+            <div id="task3-output">Click the button to load dogs.</div>
+            <button id="task3-btn">Load 12 Random Dogs</button>
+        </div>
+
+        <div class="todo">
+            Wire up the button: <code>document.getElementById('task3-btn').onclick = runTask2;</code>
+            <br><br>
+            Complete <code>runTask2()</code> — fetch 12 random images, extract each breed name from the URL, and render them as a card grid. See the script for a full guide.
+        </div>
+    </div>
+
+    <!-- TASK 3 -->
+    <div class="task">
+        <h3>Task 3: Browse Sub-breed Images with a Dynamic Dropdown</h3>
+        <p>This task chains two API calls: first fetch a breed's list of sub-breeds, then use the selected sub-breed to fetch images. It also introduces a <strong>dynamic <code>&lt;select&gt;</code> dropdown</strong> populated from an API response — a very common real-world pattern.</p>
+
+        <p>The chain is: fetch all sub-breeds → populate dropdown → user selects one → fetch images for that sub-breed.</p>
+
+        <div class="demo-area">
+            <h4>Task 3 Output — Sub-breed Browser</h4>
+            <div style="margin-bottom: 12px;">
+                <input type="text" id="breed-input-t4" placeholder="Enter breed (e.g. bulldog)" value="bulldog" style="margin-right:6px;">
+                <button id="task4-step1-btn">Load Sub-breeds</button>
+            </div>
+            <div id="task4-dropdown-area" style="margin-bottom:12px; display:none;">
+                <select id="subbreed-select"></select>
+                <button id="task4-step2-btn">Show Images</button>
+            </div>
+            <div id="task4-output">Enter a breed and click "Load Sub-breeds" to begin.</div>
+        </div>
+
+        <div class="todo">
+            Wire up both buttons:
+            <ul>
+                <li><code>document.getElementById('task4-step1-btn').onclick = runTask3Step1;</code></li>
+                <li><code>document.getElementById('task4-step2-btn').onclick = runTask3Step2;</code></li>
+            </ul>
+            Complete two functions — <code>runTask3Step1()</code> fetches the sub-breed list and populates the dropdown; <code>runTask3Step2()</code> reads the selection and fetches images for it. See the script for a full guide.
+        </div>
+    </div>
+
+    <hr class="section-divider">
+
+    <!-- ==================== YOUR CODE ==================== -->
+    <h2>Your Code Goes Here</h2>
+
+    <div class="task">
+        <p>Add your JavaScript code inside the <code>&lt;script&gt;</code> tag below. Complete all the TODO items from every task.</p>
+
+        <div class="todo">
+            <strong>Checklist:</strong>
+            <ol>
+                <li><strong>Section 1 · Task 1</strong> — Fetch a breed image + sub-breed list using URL parameters; display both together</li>
+                <li><strong>Section 2 · Task 2</strong> — Fetch 12 random dog images, extract breed names from URLs, render as a card grid</li>
+                <li><strong>Section 2 · Task 3</strong> — Chain two calls: populate a dropdown from the sub-breed list, then fetch images for the selected sub-breed</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- ==================== SCRIPT SECTION ==================== -->
+    <script>
+        // ============================================================
+        // YOUR JAVASCRIPT CODE — Complete all tasks below
+        // ============================================================
+
+        // --- SECTION 1: Fetching Data from an API ---
+
+        // ============================================================
+        // EXAMPLE — already written for you! Read the inline comments,
+        // then click "Fetch Random Dog" to see it run.
+        // ============================================================
+
+        async function runExample() {                                       // async: this function is allowed to use await
+            const output = document.getElementById('task1-output');       // grab the output <div> by its id
+            output.innerHTML = '<p class="loading">Fetching...</p>';      // show instant feedback while the request is in flight
+
+            try {                                                          // guard against errors — if anything below fails, jump to catch
+
+                const response = await fetch(                             // send a GET request; await pauses until the server responds
+                    'https://dog.ceo/api/breeds/image/random'             // the URL we're requesting
+                );                                                         // response holds the HTTP status + raw body stream
+
+                const data = await response.json();                       // read & parse the body stream as JSON → plain JS object
+                                                                           // data = { message: "https://.../shiba-14.jpg", status: "success" }
+
+                const imageUrl = data.message;                            // data.message is a plain string (just one URL) for this endpoint
+
+                const breed = imageUrl.split('/')[4];                     // URL: https://images.dog.ceo/breeds/shiba/shiba-14.jpg
+                                                                           // split('/') → ["https:", "", "images.dog.ceo", "breeds", "shiba", "shiba-14.jpg"]
+                                                                           // index [4] = "shiba" — the breed folder name
+
+                output.innerHTML = `
+                    <img src="${imageUrl}" alt="${breed}"
+                         style="max-width:300px; border-radius:8px; display:block; margin-bottom:10px;">
+                    <p><strong>Breed:</strong> ${breed.replace('-', ' ')}</p>
+                    <p style="font-size:0.85em; color:#888;">URL: ${imageUrl}</p>
+                `;                                                         // template literal: embed data with ${...}, assign to innerHTML
+
+            } catch (error) {                                             // if any line in try threw, error lands here
+                output.innerHTML = `<p class="error">❌ ${error.message}</p>`;
+            }
+        }
+
+
+        // ============================================================
+        // TASK 1: FETCH BREED IMAGE + SUB-BREED LIST (URL parameters)
+        // ============================================================
+        // Input:     breed-input (validate: show an error and return early if empty)
+        // Output div: task2-output
+        //
+        // Steps:
+        //   1. Connect function to button, read + validate the input, show a loading message, wrap in try/catch
+        //   2. fetch() https://dog.ceo/api/breed/{breed}/images/random using a template literal URL
+        //      Check response.ok and throw a descriptive error if the breed isn't found
+        //      data.message is a single image URL string
+        //   3. fetch() https://dog.ceo/api/breed/{breed}/list
+        //      data.message is an array of sub-breed name strings (empty array if breed has none)
+        //   4. Build sub-breed badges: .map() the array into <span class="breed-badge"> elements,
+        //      then .join('') them — if the array is empty, show a "None" fallback instead
+        //   5. Set output.innerHTML using the dog-detail layout:
+        //      <div class="dog-detail">
+        //        <div class="portrait"> — image goes here
+        //        <div class="info">    — breed name, sub-breed badges
+
+        async function runTask1() {
+
+        }
+
+
+        // --- SECTION 2: Dynamically Populating a Website from an Array ---
+
+
+        // ============================================================
+        // TASK 2: DISPLAY A DOG IMAGE GRID
+        // ============================================================
+        // Endpoint:  GET https://dog.ceo/api/breeds/image/random/12
+        // Output div: task3-output
+        //
+        // Steps:
+        //   1. Connect function to the button, get the output div, show a loading message, wrap in try/catch
+        //   2. fetch() the endpoint and parse the JSON — data.message is an array of 12 image URLs
+        //   3. .map() over data.message to build a card string for each URL:
+        //      - Extract the breed name from the URL: url.split('/')[4]
+        //        (URL format: https://images.dog.ceo/breeds/{breed}/{filename}.jpg)
+        //      - Replace hyphens for display: breed.replace('-', ' ')
+        //      - Wrap each card in <div class="dog-card"> with an <img>, <h5> for the breed name,
+        //        and <p class="breed-label"> for a secondary label
+        //   4. .join('') the cards and wrap in <div class="dog-grid">, set as output.innerHTML
+
+        async function runTask2() {
+
+        }
+
+
+        // ============================================================
+        // TASK 3: SUB-BREED BROWSER (dynamic dropdown + chained interaction)
+        // ============================================================
+        // Two functions triggered in sequence by the user.
+        //
+        // --- runTask3Step1() ---
+        // Input:     breed-input-t4 (validate: show an error and return early if empty)
+        // Output div: task4-output
+        //
+        // Steps:
+        //   1. Connect function to the button, read + validate the input, show a loading message, wrap in try/catch
+        //   2. fetch() https://dog.ceo/api/breed/{breed}/list
+        //      data.message is an array of sub-breed name strings (empty if none)
+        //   3. If data.message is empty, show a "no sub-breeds" message and return
+        //   4. .map() over data.message to build one <option value="{name}">{name}</option> per sub-breed
+        //      Set the result as the innerHTML of <select id="subbreed-select">
+        //   5. Reveal the dropdown area by setting its display style to 'block'
+        //   6. Update task4-output to tell the user to pick a sub-breed and click "Show Images"
+
+        async function runTask3Step1() {
+
+        }
+
+        // --- runTask3Step2() ---
+        // Inputs:    breed-input-t4 (breed), subbreed-select (selected sub-breed via .value)
+        // Output div: task4-output
+        //
+        // Steps:
+        //   1. Connect function to the button, read both inputs, show a loading message, wrap in try/catch
+        //   2. fetch() https://dog.ceo/api/breed/{breed}/{subBreed}/images/random/6
+        //      data.message is an array of 6 image URL strings
+        //   3. Build and display a grid of 6 images — same card pattern as Task 2
+        //      CSS classes: dog-grid, dog-card
+
+        async function runTask3Step2() {
+
+        }
+
+    </script>
+
+    <hr class="section-divider">
+
+    <!-- ==================== SUMMARY ==================== -->
+    <h2>Summary of Concepts</h2>
+
+    <div class="task">
+        <table style="width: 100%; border-collapse: collapse;">
+            <tr style="background-color: #3498db; color: white;">
+                <th style="padding: 10px; text-align: left;">Concept</th>
+                <th style="padding: 10px; text-align: left;">What You Learned</th>
+            </tr>
+            <tr style="background-color: #f8f9fa;">
+                <td style="padding: 10px; border: 1px solid #ddd;"><strong>onclick event handler</strong></td>
+                <td style="padding: 10px; border: 1px solid #ddd;">Links a button to a function: <code>element.onclick = myFunction;</code>. The function runs every time the button is clicked.</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border: 1px solid #ddd;"><strong>fetch()</strong></td>
+                <td style="padding: 10px; border: 1px solid #ddd;">Makes HTTP requests to APIs. Returns a Promise. Use <code>response.json()</code> to parse the body.</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border: 1px solid #ddd;"><strong>async/await</strong></td>
+                <td style="padding: 10px; border: 1px solid #ddd;">Write asynchronous code that looks synchronous. <code>await</code> pauses until a Promise resolves.</td>
+            </tr>
+            <tr style="background-color: #f8f9fa;">
+                <td style="padding: 10px; border: 1px solid #ddd;"><strong>try...catch</strong></td>
+                <td style="padding: 10px; border: 1px solid #ddd;">Error handling for async code. <code>try</code> wraps risky code, <code>catch</code> handles failures.</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border: 1px solid #ddd;"><strong>response.ok</strong></td>
+                <td style="padding: 10px; border: 1px solid #ddd;">Check if the HTTP status is 2xx before using the data. Always <code>throw</code> on <code>!response.ok</code> to trigger your catch block.</td>
+            </tr>
+            <tr style="background-color: #f8f9fa;">
+                <td style="padding: 10px; border: 1px solid #ddd;"><strong>URL Parameters</strong></td>
+                <td style="padding: 10px; border: 1px solid #ddd;">Insert variables into URLs using template literals: <code>`https://api.example.com/breed/${breed}/list`</code></td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border: 1px solid #ddd;"><strong>Multiple fetch calls</strong></td>
+                <td style="padding: 10px; border: 1px solid #ddd;">Fetch two endpoints independently in the same function, then combine the results before rendering.</td>
+            </tr>
+            <tr style="background-color: #f8f9fa;">
+                <td style="padding: 10px; border: 1px solid #ddd;"><strong>.map() + .join('')</strong></td>
+                <td style="padding: 10px; border: 1px solid #ddd;">Transforms each array item into HTML. <code>.join('')</code> combines into one string for <code>innerHTML</code>.</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border: 1px solid #ddd;"><strong>Dynamic dropdowns</strong></td>
+                <td style="padding: 10px; border: 1px solid #ddd;">Populate a <code>&lt;select&gt;</code> element with <code>&lt;option&gt;</code> tags built from API data; read the chosen value with <code>.value</code>.</td>
+            </tr>
+            <tr style="background-color: #f8f9fa;">
+                <td style="padding: 10px; border: 1px solid #ddd;"><strong>Chained API calls</strong></td>
+                <td style="padding: 10px; border: 1px solid #ddd;">Use the result of one interaction (user picks from dropdown) to build the URL for the next fetch call.</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border: 1px solid #ddd;"><strong>Template Literals</strong></td>
+                <td style="padding: 10px; border: 1px solid #ddd;"><code>`Hello ${name}`</code> — embed expressions in strings. Essential for building dynamic HTML and API URLs.</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="task">
+        <h3>API Used in This Lab</h3>
+        <ul>
+            <li><a href="https://dog.ceo/dog-api/" target="_blank">Dog CEO Dog API</a> — Free, open REST API for random dog images organised by breed (no authentication required)</li>
+        </ul>
+
+        <h3>Key Endpoints</h3>
+        <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+            <tr style="background-color: #2c3e50; color: white;">
+                <th style="padding: 8px; text-align: left;">Endpoint</th>
+                <th style="padding: 8px; text-align: left;">Returns</th>
+            </tr>
+            <tr style="background-color: #f8f9fa;">
+                <td style="padding: 8px; border: 1px solid #ddd;"><code>/api/breeds/image/random</code></td>
+                <td style="padding: 8px; border: 1px solid #ddd;">One random dog image URL (string)</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ddd;"><code>/api/breeds/image/random/{count}</code></td>
+                <td style="padding: 8px; border: 1px solid #ddd;">Array of N random image URLs</td>
+            </tr>
+            <tr style="background-color: #f8f9fa;">
+                <td style="padding: 8px; border: 1px solid #ddd;"><code>/api/breed/{breed}/images/random</code></td>
+                <td style="padding: 8px; border: 1px solid #ddd;">One random image URL for a specific breed</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ddd;"><code>/api/breed/{breed}/list</code></td>
+                <td style="padding: 8px; border: 1px solid #ddd;">Array of sub-breed names for the breed</td>
+            </tr>
+            <tr style="background-color: #f8f9fa;">
+                <td style="padding: 8px; border: 1px solid #ddd;"><code>/api/breed/{breed}/{subBreed}/images/random/{count}</code></td>
+                <td style="padding: 8px; border: 1px solid #ddd;">Array of N images for a specific sub-breed</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ddd;"><code>/api/breeds/list/all</code></td>
+                <td style="padding: 8px; border: 1px solid #ddd;">Object mapping every breed to its sub-breeds array</td>
+            </tr>
+        </table>
+
+        <h3>References</h3>
+        <ul>
+            <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch" target="_blank">MDN: Using Fetch</a></li>
+            <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all" target="_blank">MDN: Promise.all()</a></li>
+            <li><a href="https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/JSON" target="_blank">MDN: Working with JSON</a></li>
+            <li><a href="https://dog.ceo/dog-api/documentation" target="_blank">Dog CEO API Documentation</a></li>
+        </ul>
+    </div>
+
+</body>
+</html>
