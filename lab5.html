@@ -563,37 +563,37 @@ document.getElementById('output').innerHTML = html;</code></pre>
         //   5. Reveal the dropdown area by setting its display style to 'block'
         //   6. Update task4-output to tell the user to pick a sub-breed and click "Show Images"
 
-        async function runTask3Step1() {
-            const output3 = document.getElementById('task4-output');
-            output3.innerHTML = '<p class="loading">Fetching...</p>';
-            try {
-                const breedInput = document.getElementById('breed-input-t4').value.trim();
-                if (!breedInput) {
-                    output3.innerHTML = '<p class="error">Please enter a breed name.</p>';
-                    return;
-                }
+            async function runTask3Step1() {
+                const output3 = document.getElementById('task4-output');
+                output3.innerHTML = '<p class="loading">Fetching...</p>';
+                try {
+                    const breedInput = document.getElementById('breed-input-t4').value.trim();
+                    if (!breedInput) {
+                        output3.innerHTML = '<p class="error">Please enter a breed name.</p>';
+                        return;
+                    }
 
-                const response = await fetch(
-                    `https://dog.ceo/api/breed/${breedInput}/list`
-                );
-                if (!response.ok) throw new Error('Breed not found.');
-                const data = await response.json();
-                const subbreeds = data.message;
+                    const response = await fetch(
+                        `https://dog.ceo/api/breed/${breedInput}/list`
+                    );
+                    if (!response.ok) throw new Error('Breed not found.');
+                    const data = await response.json();
+                    const subbreeds = data.message;
 
-                if (subbreeds.length === 0) {
-                    output3.innerHTML = `<p>No sub-breeds found for "${breedInput}".</p>`;
-                    return;
-                }
+                    if (subbreeds.length === 0) {
+                        output3.innerHTML = `<p>No sub-breeds found for "${breedInput}".</p>`;
+                        return;
+                    }
 
-                const optionsHtml = subbreeds.map(sb => `<option value="${sb}">${sb}</option>`).join('');
-                document.getElementById('subbreed-select').innerHTML = optionsHtml;
-                document.getElementById('task4-dropdown-area').style.display = 'block';
-                output3.innerHTML = `<p>Sub-breeds loaded. Please select one and click "Show Images".</p>`;
+                    const optionsHtml = subbreeds.map(sb => `<option value="${sb}">${sb}</option>`).join('');
+                    document.getElementById('subbreed-select').innerHTML = optionsHtml;
+                    document.getElementById('task4-dropdown-area').style.display = 'block';
+                    output3.innerHTML = `<p>Sub-breeds loaded. Please select one and click "Show Images".</p>`;
 
-            } catch (error) {
-                output3.innerHTML = `<p class="error">❌ ${error.message}</p>`;
-            }   
-        }
+                } catch (error) {
+                    output3.innerHTML = `<p class="error">❌ ${error.message}</p>`;
+                }   
+            }
 
         // --- runTask3Step2() ---
         // Inputs:    breed-input-t4 (breed), subbreed-select (selected sub-breed via .value)

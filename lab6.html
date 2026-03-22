@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab 6: AJAX and Asynchronous Form Submission</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.7;
+            padding: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: #f5f5f5;
+        }
+        h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; margin-bottom: 20px; }
+        h2 { color: #2980b9; margin-top: 30px; margin-bottom: 15px; }
+        h3 { color: #27ae60; margin-top: 20px; margin-bottom: 10px; }
+        .objective {
+            background-color: #e8f6f3;
+            padding: 15px;
+            border-left: 4px solid #1abc9c;
+            margin-bottom: 20px;
+        }
+        .task {
+            background-color: #fff;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .todo {
+            background-color: #fef9e7;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #f1c40f;
+            border-radius: 0 5px 5px 0;
+        }
+        .todo::before {
+            content: "📝 TODO: ";
+            font-weight: bold;
+            color: #d68910;
+        }
+        code {
+            background-color: #ecf0f1;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        pre {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 10px 0;
+            font-size: 0.9em;
+        }
+        pre code { background-color: transparent; color: inherit; padding: 0; }
+        .note {
+            background-color: #ebf5fb;
+            padding: 12px;
+            border-left: 4px solid #3498db;
+            margin: 10px 0;
+            font-size: 0.95em;
+        }
+        .note::before { content: "💡 "; font-weight: bold; }
+        .demo-area {
+            background-color: #fff;
+            padding: 20px;
+            border: 2px solid #3498db;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .demo-area h4 { color: #3498db; margin-bottom: 15px; }
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px 5px 5px 0;
+        }
+        button:hover { background-color: #2980b9; }
+        .section-divider {
+            border: none;
+            height: 2px;
+            background: linear-gradient(to right, #3498db, #2ecc71);
+            margin: 30px 0;
+        }
+        ol, ul { margin-left: 25px; margin-bottom: 10px; }
+        li { margin-bottom: 5px; }
+
+        /* Form styling */
+        .lab-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-width: 500px;
+        }
+        .lab-form label {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 0.95em;
+        }
+        .lab-form input[type="text"],
+        .lab-form input[type="email"],
+        .lab-form textarea,
+        .lab-form select {
+            padding: 10px 15px;
+            border: 2px solid #bdc3c7;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+            width: 100%;
+        }
+        .lab-form input:focus,
+        .lab-form textarea:focus,
+        .lab-form select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        .lab-form textarea { resize: vertical; min-height: 80px; }
+
+        /* Response display */
+        .response-box {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        /* Status messages */
+        .loading { color: #3498db; font-style: italic; padding: 10px 0; }
+        .error { color: #e74c3c; font-weight: bold; padding: 10px 0; }
+        .success { color: #27ae60; font-weight: bold; padding: 10px 0; }
+
+        /* Comment/post cards */
+        .comment-card {
+            background-color: #f8f9fa;
+            padding: 12px 15px;
+            border-left: 3px solid #3498db;
+            border-radius: 0 6px 6px 0;
+            margin: 10px 0;
+        }
+        .comment-card h5 { color: #2c3e50; margin-bottom: 4px; }
+        .comment-card p { color: #555; font-size: 0.95em; margin: 2px 0; }
+        .comment-card .email { color: #7f8c8d; font-size: 0.85em; }
+    </style>
+</head>
+<body>
+
+    <h1>Lab 6: AJAX and Asynchronous Form Submission</h1>
+
+    <div class="objective">
+        <strong>Objective:</strong> To perform asynchronous form submission using AJAX to update web content without reloading the page.
+    </div>
+
+    <hr class="section-divider">
+
+    <!-- ================================================================== -->
+    <!-- SECTION 1: UNDERSTANDING AJAX AND FORM SUBMISSION                  -->
+    <!-- ================================================================== -->
+    <h2>Section 1: Understanding AJAX</h2>
+
+    <div class="task">
+        <h3>What is AJAX?</h3>
+        <p><strong>AJAX</strong> (Asynchronous JavaScript and XML) is a technique that allows web pages to send and receive data from a server <strong>without reloading the page</strong>. Despite the name, modern AJAX almost always uses <strong>JSON</strong> instead of XML.</p>
+
+        <p style="margin-top: 10px;">In a <strong>traditional form submission</strong>, clicking "Submit" sends the form data to the server and the browser reloads the entire page with the server's response. With <strong>AJAX</strong>, JavaScript intercepts the form submission, sends the data in the background using <code>fetch()</code>, and updates only the relevant part of the page.</p>
+
+        <div class="note">
+            <strong>Key difference:</strong> Traditional forms use the browser's default behaviour (<code>action</code> + <code>method</code> attributes cause a full page reload). AJAX uses JavaScript to send the request and handle the response — the page never reloads.
+        </div>
+
+        <h3 style="margin-top: 20px;">The AJAX Form Submission Pattern</h3>
+        <pre><code>// 1. Prevent the default form submission (which would reload the page)
+form.addEventListener('submit', async function(event) {
+    event.preventDefault();
+
+    // 2. Collect form data
+    const title = document.getElementById('title').value;
+
+    // 3. Send data to the server using fetch() with POST method
+    const response = await fetch('https://api.example.com/posts', {
+        method: 'POST',                              // HTTP method
+        headers: { 'Content-Type': 'application/json' },  // tell server we're sending JSON
+        body: JSON.stringify({ title: title })        // convert JS object to JSON string
+    });
+
+    // 4. Parse the server's response
+    const result = await response.json();
+
+    // 5. Update the page with the result (no reload!)
+    document.getElementById('output').innerHTML = `&lt;p&gt;Created: ${result.title}&lt;/p&gt;`;
+});</code></pre>
+
+        <div class="note">
+            <strong>API used in this lab:</strong> <a href="https://jsonplaceholder.typicode.com/" target="_blank">JSONPlaceholder</a> — a free fake REST API for testing. It accepts POST/PUT/PATCH/DELETE requests and returns realistic responses, but does not actually save data. No API key required.
+        </div>
+    </div>
+
+    <!-- EXAMPLE -->
+    <div class="task">
+        <h3>Example: Submit a Post Using AJAX</h3>
+
+        <p>The code for this example is already written — open the <code>&lt;script&gt;</code> section and read through the <code>submit</code> event listener alongside its inline comments, then fill out the form and click "Create Post" to see it work.</p>
+
+        <p>Notice how the form uses <code>event.preventDefault()</code> to stop the page from reloading, then sends data with <code>fetch()</code> using the <code>POST</code> method.</p>
+
+        <div class="demo-area">
+            <h4>Demo — Create a Post</h4>
+            <form id="example-form" class="lab-form">
+                <label for="ex-title">Post Title</label>
+                <input type="text" id="ex-title" placeholder="Enter a post title" required>
+
+                <label for="ex-body">Post Body</label>
+                <textarea id="ex-body" placeholder="Write your post content..." required></textarea>
+
+                <button type="submit">Create Post</button>
+            </form>
+            <div id="example-output"></div>
+        </div>
+
+    </div>
+
+    <hr class="section-divider">
+
+    <!-- ================================================================== -->
+    <!-- SECTION 2: FORM SUBMISSION TASKS                                   -->
+    <!-- ================================================================== -->
+    <h2>Section 2: AJAX Form Submission Tasks</h2>
+
+    <!-- TASK 1 -->
+    <div class="task">
+        <h3>Task 1: Add a Comment to a Post</h3>
+        <p>JSONPlaceholder lets you create comments on posts. You'll build a form that collects a commenter's name, email, and comment body, then submits it to the API using <code>POST</code>. After submitting, display the server's response on the page.</p>
+
+        <div class="demo-area">
+            <h4>Task 1 Output — Add Comment</h4>
+            <form id="task1-form" class="lab-form">
+                <label for="t1-name">Your Name</label>
+                <input type="text" id="t1-name" placeholder="Enter your name" required>
+
+                <label for="t1-email">Your Email</label>
+                <input type="email" id="t1-email" placeholder="Enter your email" required>
+
+                <label for="t1-body">Comment</label>
+                <textarea id="t1-body" placeholder="Write your comment..." required></textarea>
+
+                <button type="submit" id="task1-btn">Post Comment</button>
+            </form>
+            <div id="task1-output"></div>
+        </div>
+
+        <div class="todo">
+            Attach a <code>submit</code> event listener to <code>task1-form</code>.
+            <br><br>
+            Complete the handler — prevent the default form behaviour, collect the form values, POST them to the API, and display the server's response as a styled comment card. See the script for a full guide.
+        </div>
+
+    </div>
+
+    <!-- TASK 2 -->
+    <div class="task">
+        <h3>Task 2: Update a Post (PUT Request)</h3>
+        <p>The <code>PUT</code> method replaces an entire resource on the server. You'll fetch an existing post, display it so the user can edit it, then send the updated data back using <code>PUT</code>. This shows how AJAX lets users edit content in-place without leaving the page.</p>
+
+        <div class="demo-area">
+            <h4>Task 2 Output — Edit Post</h4>
+            <div style="margin-bottom: 15px;">
+                <button id="task2-load-btn">Load Post #1 for Editing</button>
+            </div>
+            <form id="task2-form" class="lab-form" style="display: none;">
+                <label for="t2-title">Post Title</label>
+                <input type="text" id="t2-title" required>
+
+                <label for="t2-body">Post Body</label>
+                <textarea id="t2-body" required></textarea>
+
+                <button type="submit">Save Changes</button>
+            </form>
+            <div id="task2-output">Click "Load Post #1 for Editing" to begin.</div>
+        </div>
+
+        <div class="todo">
+            Wire up the load button: <code>document.getElementById('task2-load-btn').onclick = loadPost;</code>
+            <br><br>
+            Attach a <code>submit</code> event listener to <code>task2-form</code>.
+            <br><br>
+            Complete <code>loadPost()</code> (fetch the post, fill the form, show it) and the submit handler (send updated data with PUT). See the script for a full guide.
+        </div>
+
+    </div>
+
+    <!-- TASK 3 -->
+    <div class="task">
+        <h3>Task 3: Delete a Post and Update the Page</h3>
+        <p>The <code>DELETE</code> method removes a resource from the server. You'll display a list of posts, each with a "Delete" button. When clicked, the post is deleted via the API and removed from the page — all without a reload.</p>
+
+        <div class="demo-area">
+            <h4>Task 3 Output — Delete Posts</h4>
+            <button id="task3-load-btn">Load Posts</button>
+            <div id="task3-output">Click "Load Posts" to display a list of posts.</div>
+        </div>
+
+        <div class="todo">
+            Wire up the load button: <code>document.getElementById('task3-load-btn').onclick = loadPosts;</code>
+            <br><br>
+            Complete <code>loadPosts()</code> (fetch and display posts) and <code>deletePost(id, element)</code> (send DELETE request and remove the card from the page). See the script for a full guide.
+        </div>
+
+    </div>
+
+    <hr class="section-divider">
+
+    <!-- ==================== YOUR CODE ==================== -->
+    <h2>Your Code Goes Here</h2>
+
+    <div class="task">
+        <p>Add your JavaScript code inside the <code>&lt;script&gt;</code> tag below. Complete all the TODO items from every task.</p>
+
+        <div class="todo">
+            <strong>Checklist:</strong>
+            <ol>
+                <li><strong>Section 2 · Task 1</strong> — Submit a comment using POST, display the response</li>
+                <li><strong>Section 2 · Task 2</strong> — Fetch an existing post, edit it, and save changes using PUT</li>
+                <li><strong>Section 2 · Task 3</strong> — Display posts with delete buttons, remove them using DELETE</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- ==================== SCRIPT SECTION ==================== -->
+    <script>
+        // ============================================================
+        // YOUR JAVASCRIPT CODE — Complete all tasks below
+        // ============================================================
+
+
+        // --- SECTION 1: Understanding AJAX ---
+
+
+        // ============================================================
+        // EXAMPLE — already written for you!
+        // Read the comments alongside each line, then fill out the form
+        // and click "Create Post" to see AJAX form submission in action.
+        // ============================================================
+
+        document.getElementById('example-form').addEventListener(         // grab the form element by its id
+            'submit',                                                     // listen for the 'submit' event (fires when user clicks the submit button)
+            async function(event) {                                       // async: this handler is allowed to use await
+                event.preventDefault();                                   // IMPORTANT: stop the browser from reloading the page
+
+                const output = document.getElementById('example-output'); // grab the output <div> to show results
+                output.innerHTML = '<p class="loading">Submitting...</p>';// show instant feedback while request is in flight
+
+                try {                                                     // guard against errors — if anything below fails, jump to catch
+
+                    const response = await fetch(                         // send a POST request; await pauses until the server responds
+                        'https://jsonplaceholder.typicode.com/posts',     // the API endpoint that accepts new posts
+                        {
+                            method: 'POST',                               // HTTP method — POST means "create a new resource"
+                            headers: {                                    // metadata about the request body
+                                'Content-Type': 'application/json'        // tells the server we're sending JSON data
+                            },
+                            body: JSON.stringify({                        // convert a JS object into a JSON string for the request body
+                                title: document.getElementById('ex-title').value,   // read the title input's value
+                                body: document.getElementById('ex-body').value,     // read the body textarea's value
+                                userId: 1                                           // required field for this API
+                            })
+                        }
+                    );                                                    // response holds the HTTP status + raw body stream
+
+                    const data = await response.json();                   // read & parse the response body as JSON → plain JS object
+
+                    output.innerHTML = `
+                        <p class="success">Post created successfully!</p>
+                        <div class="response-box">${JSON.stringify(data, null, 2)}</div>
+                    `;                                                    // template literal: show success message + formatted JSON response
+
+                } catch (error) {                                         // if any line in try threw, error lands here
+                    output.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+                }
+            }
+        );
+
+
+        // --- SECTION 2: AJAX Form Submission Tasks ---
+
+        // ============================================================
+        // TASK 1: ADD A COMMENT TO A POST
+        // ============================================================
+        // Endpoint:  POST https://jsonplaceholder.typicode.com/comments
+        // Form:      task1-form  |  Output div: task1-output
+        //
+        // Listen for the form's 'submit' event. Prevent the default reload,
+        // read the three input values (t1-name, t1-email, t1-body), and
+        // POST them as JSON (include postId: 1). Display the server's
+        // response as a comment card using the comment-card class.
+        // Follow the same pattern as the Example above.
+
+        document.getElementById('task1-form').addEventListener(
+            'submit',
+            async function(event) {
+            event.preventDefault();
+
+            const output = document.getElementById('task1-output');
+            output.innerHTML = '<p class="loading">Posting comment...</p>';
+
+            try {
+                const response = await fetch(
+                'https://jsonplaceholder.typicode.com/comments',
+                {
+                    method: 'POST',
+                    headers: {
+                    'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                    name: document.getElementById('t1-name').value,
+                    email: document.getElementById('t1-email').value,
+                    body: document.getElementById('t1-body').value,
+                    postId: 1
+                    })
+                }
+                );
+
+                const data = await response.json();
+
+                output.innerHTML = `
+                <p class="success">Comment posted successfully!</p>
+                <div class="comment-card">
+                    <h5>${data.name}</h5>
+                    <p class="email">${data.email}</p>
+                    <p>${data.body}</p>
+                </div>
+                `;
+
+                document.getElementById('task1-form').reset();
+
+            } catch (error) {
+                output.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+            }
+            }
+        );
+
+        // ============================================================
+        // TASK 2: UPDATE A POST (PUT REQUEST)
+        // ============================================================
+        // Load endpoint: GET  https://jsonplaceholder.typicode.com/posts/1
+        // Save endpoint: PUT  https://jsonplaceholder.typicode.com/posts/1
+        // Load button: task2-load-btn  |  Form: task2-form  |  Output div: task2-output
+        //
+        // PART A — loadPost():
+        //   Wire the load button. Fetch post #1 (GET), fill the form
+        //   fields (t2-title, t2-body) with the response data, and
+        //   make the hidden form visible (style.display = 'flex').
+        //
+        // PART B — submit handler for task2-form:
+        //   Listen for 'submit', prevent default, read the edited values,
+        //   and send them back with method: 'PUT'. Display the server's
+        //   response in a response-box div.
+
+        async function loadPost() {
+            const output = document.getElementById('task2-output');
+            output.innerHTML = '<p class="loading">Loading post...</p>';
+
+            try {
+            const response = await fetch(
+                'https://jsonplaceholder.typicode.com/posts/1'
+            );
+            const post = await response.json();
+
+            document.getElementById('t2-title').value = post.title;
+            document.getElementById('t2-body').value = post.body;
+            document.getElementById('task2-form').style.display = 'flex';
+            output.innerHTML = '';
+
+            } catch (error) {
+            output.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+            }
+        }
+
+        document.getElementById('task2-load-btn').onclick = loadPost;
+
+        document.getElementById('task2-form').addEventListener(
+            'submit',
+            async function(event) {
+            event.preventDefault();
+
+            const output = document.getElementById('task2-output');
+            output.innerHTML = '<p class="loading">Saving changes...</p>';
+
+            try {
+                const response = await fetch(
+                'https://jsonplaceholder.typicode.com/posts/1',
+                {
+                    method: 'PUT',
+                    headers: {
+                    'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                    id: 1,
+                    title: document.getElementById('t2-title').value,
+                    body: document.getElementById('t2-body').value,
+                    userId: 1
+                    })
+                }
+                );
+
+                const data = await response.json();
+
+                output.innerHTML = `
+                <p class="success">Post updated successfully!</p>
+                <div class="response-box">${JSON.stringify(data, null, 2)}</div>
+                `;
+
+            } catch (error) {
+                output.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+            }
+            }
+        );
+
+        // ============================================================
+        // TASK 3: DELETE A POST AND UPDATE THE PAGE
+        // ============================================================
+        // List endpoint:   GET    https://jsonplaceholder.typicode.com/posts?_limit=5
+        // Delete endpoint: DELETE https://jsonplaceholder.typicode.com/posts/{id}
+        // Load button: task3-load-btn  |  Output div: task3-output
+        //
+        // PART A — loadPosts():
+        //   Wire the load button. Fetch 5 posts, use .map() to build
+        //   a comment-card for each (give each card an id like "post-3"),
+        //   and add a Delete button that calls deletePost(id).
+        //
+        // PART B — deletePost(id):
+        //   Send a fetch with method: 'DELETE' for the given id.
+        //   If response.ok, remove the card from the DOM with .remove().
+
+        async function loadPosts() {
+            const output = document.getElementById('task3-output');
+            output.innerHTML = '<p class="loading">Loading posts...</p>';
+
+            try {
+            const response = await fetch(
+                'https://jsonplaceholder.typicode.com/posts?_limit=5'
+            );
+            const posts = await response.json();
+
+            output.innerHTML = posts.map(post => `
+                <div class="comment-card" id="post-${post.id}">
+                <h5>${post.title}</h5>
+                <p>${post.body}</p>
+                <button onclick="deletePost(${post.id}, document.getElementById('post-${post.id}'))">Delete</button>
+                </div>
+            `).join('');
+
+            } catch (error) {
+            output.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+            }
+        }
+
+        async function deletePost(id, element) {
+            try {
+            const response = await fetch(
+                `https://jsonplaceholder.typicode.com/posts/${id}`,
+                { method: 'DELETE' }
+            );
+
+            if (response.ok) {
+                element.remove();
+            }
+            } catch (error) {
+            console.error('Error deleting post:', error);
+            }
+        }
+
+        document.getElementById('task3-load-btn').onclick = loadPosts;
+
+
+        getElementById('task1-form').addEventListener(
+            'submit',
+            async function(event) { 
+
+            }
+        );
+        // ============================================================
+        // TASK 2: UPDATE A POST (PUT REQUEST)
+        // ============================================================
+        // Load endpoint: GET  https://jsonplaceholder.typicode.com/posts/1
+        // Save endpoint: PUT  https://jsonplaceholder.typicode.com/posts/1
+        // Load button: task2-load-btn  |  Form: task2-form  |  Output div: task2-output
+        //
+        // PART A — loadPost():
+        //   Wire the load button. Fetch post #1 (GET), fill the form
+        //   fields (t2-title, t2-body) with the response data, and
+        //   make the hidden form visible (style.display = 'flex').
+        //
+        // PART B — submit handler for task2-form:
+        //   Listen for 'submit', prevent default, read the edited values,
+        //   and send them back with method: 'PUT'. Display the server's
+        //   response in a response-box div.
+
+
+
+        // ============================================================
+        // TASK 3: DELETE A POST AND UPDATE THE PAGE
+        // ============================================================
+        // List endpoint:   GET    https://jsonplaceholder.typicode.com/posts?_limit=5
+        // Delete endpoint: DELETE https://jsonplaceholder.typicode.com/posts/{id}
+        // Load button: task3-load-btn  |  Output div: task3-output
+        //
+        // PART A — loadPosts():
+        //   Wire the load button. Fetch 5 posts, use .map() to build
+        //   a comment-card for each (give each card an id like "post-3"),
+        //   and add a Delete button that calls deletePost(id).
+        //
+        // PART B — deletePost(id):
+        //   Send a fetch with method: 'DELETE' for the given id.
+        //   If response.ok, remove the card from the DOM with .remove().
+
+
+    </script>
+
+    <hr class="section-divider">
+
+    <!-- ==================== SUMMARY ==================== -->
+    <h2>Summary of Concepts</h2>
+
+    <div class="task">
+        <table style="width: 100%; border-collapse: collapse;">
+            <tr style="background-color: #3498db; color: white;">
+                <th style="padding: 10px; text-align: left;">Concept</th>
+                <th style="padding: 10px; text-align: left;">What You Learned</th>
+            </tr>
+            <tr style="background-color: #f8f9fa;">
+                <td style="padding: 10px; border: 1px solid #ddd;"><strong>AJAX</strong></td>
+                <td style="padding: 10px; border: 1px solid #ddd;">Send and receive data from a server without reloading the page. The core technique behind modern interactive web apps.</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border: 1px solid #ddd;"><strong>event.preventDefault()</strong></td>
+                <td style="padding: 10px; border: 1px solid #ddd;">Stops the browser's default form submission (which causes a page reload). Required for AJAX form handling.</td>
+            </tr>
+            <tr style="background-color: #f8f9fa;">
+                <td style="padding: 10px; border: 1px solid #ddd;"><strong>POST method</strong></td>
+                <td style="padding: 10px; border: 1px solid #ddd;">Creates a new resource on the server. Pass <code>method: 'POST'</code> in the fetch options.</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border: 1px solid #ddd;"><strong>PUT method</strong></td>
+                <td style="padding: 10px; border: 1px solid #ddd;">Replaces an existing resource. Pass <code>method: 'PUT'</code> with the full updated object in the body.</td>
+            </tr>
+            <tr style="background-color: #f8f9fa;">
+                <td style="padding: 10px; border: 1px solid #ddd;"><strong>DELETE method</strong></td>
+                <td style="padding: 10px; border: 1px solid #ddd;">Removes a resource from the server. Pass <code>method: 'DELETE'</code> — typically no body is needed.</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border: 1px solid #ddd;"><strong>JSON.stringify()</strong></td>
+                <td style="padding: 10px; border: 1px solid #ddd;">Converts a JavaScript object into a JSON string for sending in a request body.</td>
+            </tr>
+            <tr style="background-color: #f8f9fa;">
+                <td style="padding: 10px; border: 1px solid #ddd;"><strong>Content-Type header</strong></td>
+                <td style="padding: 10px; border: 1px solid #ddd;">Tells the server what format the data is in. <code>'application/json'</code> means the body is JSON.</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border: 1px solid #ddd;"><strong>response.ok</strong></td>
+                <td style="padding: 10px; border: 1px solid #ddd;">Boolean that is <code>true</code> if the HTTP status is 200–299. Use it to check if the request succeeded.</td>
+            </tr>
+            <tr style="background-color: #f8f9fa;">
+                <td style="padding: 10px; border: 1px solid #ddd;"><strong>DOM manipulation after AJAX</strong></td>
+                <td style="padding: 10px; border: 1px solid #ddd;">After a successful request, update only the affected part of the page using <code>innerHTML</code> or <code>.remove()</code>.</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="task">
+        <h3>API Used in This Lab</h3>
+        <ul>
+            <li><a href="https://jsonplaceholder.typicode.com/" target="_blank">JSONPlaceholder</a> — Free fake REST API for testing and prototyping (no authentication required)</li>
+        </ul>
+
+        <h3>Key Endpoints</h3>
+        <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+            <tr style="background-color: #2c3e50; color: white;">
+                <th style="padding: 8px; text-align: left;">Method</th>
+                <th style="padding: 8px; text-align: left;">Endpoint</th>
+                <th style="padding: 8px; text-align: left;">Description</th>
+            </tr>
+            <tr style="background-color: #f8f9fa;">
+                <td style="padding: 8px; border: 1px solid #ddd;"><code>GET</code></td>
+                <td style="padding: 8px; border: 1px solid #ddd;"><code>/posts</code> or <code>/posts/1</code></td>
+                <td style="padding: 8px; border: 1px solid #ddd;">Retrieve all posts or a single post</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ddd;"><code>POST</code></td>
+                <td style="padding: 8px; border: 1px solid #ddd;"><code>/posts</code> or <code>/comments</code></td>
+                <td style="padding: 8px; border: 1px solid #ddd;">Create a new post or comment</td>
+            </tr>
+            <tr style="background-color: #f8f9fa;">
+                <td style="padding: 8px; border: 1px solid #ddd;"><code>PUT</code></td>
+                <td style="padding: 8px; border: 1px solid #ddd;"><code>/posts/1</code></td>
+                <td style="padding: 8px; border: 1px solid #ddd;">Replace an existing post with updated data</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ddd;"><code>DELETE</code></td>
+                <td style="padding: 8px; border: 1px solid #ddd;"><code>/posts/1</code></td>
+                <td style="padding: 8px; border: 1px solid #ddd;">Delete a post</td>
+            </tr>
+        </table>
+
+        <h3>References</h3>
+        <ul>
+            <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch" target="_blank">MDN: Using Fetch</a></li>
+            <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault" target="_blank">MDN: event.preventDefault()</a></li>
+            <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify" target="_blank">MDN: JSON.stringify()</a></li>
+            <li><a href="https://jsonplaceholder.typicode.com/guide/" target="_blank">JSONPlaceholder Guide</a></li>
+        </ul>
+    </div>
+
+</body>
+</html>
