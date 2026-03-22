@@ -273,7 +273,7 @@
             <h4>Task 1 Output — Breed Detail</h4>
             <div style="margin-bottom: 15px;">
                 <input type="text" id="breed-input" placeholder="Enter breed (e.g. hound)" value="hound">
-                <button id="task2-btn">Show Breed Detail</button>
+                <button id="task2-btn" onclick="runTask1()">Show Breed Detail</button>
             </div>
             <div id="task2-output">Enter a breed name and click "Show Breed Detail".</div>
         </div>
@@ -448,7 +448,53 @@ document.getElementById('output').innerHTML = html;</code></pre>
         //        <div class="info">    — breed name, sub-breed badges
 
         async function runTask1() {
+            const output1 = document.getElementById('task2-output');
+            output1.innerHTML = '<p class="loading">Fetching...</p>';
 
+            try {
+            const breedInput = document.getElementById('breed-input').value.trim();
+            if (!breedInput) {
+                output1.innerHTML = '<p class="error">Please enter a breed name.</p>';
+                return;
+            }
+
+            // Fetch random image for breed
+            const imageResponse = await fetch(
+                `https://dog.ceo/api/breed/${breedInput}/images/random`
+            );
+            if (!imageResponse.ok) throw new Error('Breed not found.');
+            const imageData = await imageResponse.json();
+            const imageUrl = imageData.message;
+
+            // Fetch sub-breed list
+            const subbreakResponse = await fetch(
+                `https://dog.ceo/api/breed/${breedInput}/list`
+            );
+            if (!subbreakResponse.ok) throw new Error('Failed to fetch sub-breeds.');
+            const subbreedData = await subbreakResponse.json();
+            const subbreeds = subbreedData.message;
+
+            // Build sub-breed badges
+            const badgesHtml = subbreeds.length > 0
+                ? subbreeds.map(sb => `<span class="breed-badge">${sb}</span>`).join('')
+                : '<span class="breed-badge">None</span>';
+
+            output1.innerHTML = `
+                <div class="dog-detail">
+                <div class="portrait">
+                    <img src="${imageUrl}" alt="${breedInput}">
+                </div>
+                <div class="info">
+                    <h4>${breedInput}</h4>
+                    <p><strong>Sub-breeds:</strong></p>
+                    <div>${badgesHtml}</div>
+                </div>
+                </div>
+            `;
+
+            } catch (error) {
+            output1.innerHTML = `<p class="error">❌ ${error.message}</p>`;
+            }
         }
 
 
