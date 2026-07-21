@@ -1,61 +1,65 @@
 # 🌐 Web Programming Lab
 
-This repository contains my Web Programming laboratory assignments, practicals, and mini projects completed during my B.Tech Computer Engineering course.
+This repository contains my Web Programming laboratory assignments, practicals, and exercises completed as part of my **B.Tech Computer Engineering** coursework.
 
-The purpose of this repository is to document my learning journey in front-end web development using HTML, CSS, JavaScript, and related web technologies.
+The aim of this repository is to strengthen my understanding of modern web development concepts by implementing hands-on experiments using HTML, CSS, JavaScript, and Bootstrap.
 
 ---
 
 ## 📚 Topics Covered
 
-- HTML5
-  - Basic Structure
-  - Forms
-  - Tables
-  - Lists
-  - Semantic Elements
-  - Multimedia
+### HTML5
+- Basic Structure
+- Text Formatting
+- Lists
+- Tables
+- Forms
+- Multimedia
+- Semantic Elements
 
-- CSS3
-  - Selectors
-  - Colors & Typography
-  - Box Model
-  - Flexbox
-  - Grid Layout
-  - Responsive Design
-  - Animations & Transitions
+### CSS3
+- Selectors
+- Colors & Fonts
+- Box Model
+- Flexbox
+- CSS Grid
+- Responsive Design
+- Animations & Transitions
 
-- JavaScript
-  - Variables & Data Types
-  - Operators
-  - Functions
-  - Arrays & Objects
-  - DOM Manipulation
-  - Events
-  - Form Validation
-  - ES6 Features
+### JavaScript
+- Variables & Data Types
+- Operators
+- Conditional Statements
+- Loops
+- Functions
+- Arrays & Objects
+- DOM Manipulation
+- Event Handling
+- Form Validation
+- ES6 Features
 
-- Bootstrap
-  - Responsive Layouts
-  - Components
-  - Navigation
-  - Cards
-  - Forms
+### Bootstrap
+- Grid System
+- Navigation Bar
+- Cards
+- Forms
+- Buttons
+- Responsive Components
 
 ---
 
 ## 📂 Repository Structure
 
 ```
-Web-Programming/
+web-programming-lab/
 │
-├── Lab 1/
-├── Lab 2/
-├── Lab 3/
-├── Lab 4/
-├── Lab 5/
-├── Lab 6/
-├── Mini Projects/
+├── Lab 1
+├── Lab 2
+├── Lab 3
+├── Lab 4
+├── Lab 5
+├── Lab 6
+├── Mini Project
 └── README.md
 ```
 
@@ -68,52 +72,52 @@ Web-Programming/
 - JavaScript (ES6)
 - Bootstrap
 - Visual Studio Code
-- Git & GitHub
+- Git
+- GitHub
 
 ---
 
-## 🎯 Learning Objectives
+## 🚀 Mini Project
 
-- Understand the fundamentals of web development.
-- Build responsive and interactive web pages.
-- Learn client-side scripting with JavaScript.
-- Practice clean and organized code structure.
-- Strengthen front-end development skills through hands-on assignments.
+### 🏥 TeleMed Connect
+
+A healthcare web application developed as part of this course that enables patients and doctors to connect online.
+
+**Repository:**
+> https://github.com/AmitPundekar16/telemed-connect
 
 ---
 
-## 🚀 How to Run
+## 🚀 Getting Started
 
-1. Clone this repository
+Clone this repository:
 
 ```bash
-git clone https://github.com/AmitPundekar16/web-programming.git
+git clone https://github.com/AmitPundekar16/web-programming-lab.git
 ```
 
-2. Open the project folder.
+Open any project folder and launch the `index.html` file in your browser.
 
-3. Open any `.html` file in your browser.
-
-Or use the **Live Server** extension in Visual Studio Code for a better development experience.
+For development, you can also use the **Live Server** extension in Visual Studio Code.
 
 ---
 
-## 📸 Screenshots
+## 🎯 Learning Outcomes
 
-You can add screenshots of your projects here.
-
-```
-screenshots/
-├── lab1.png
-├── lab2.png
-└── project.png
-```
+- Develop responsive web pages using HTML and CSS.
+- Implement interactive features with JavaScript.
+- Understand DOM manipulation and event handling.
+- Build responsive interfaces using Bootstrap.
+- Apply web development concepts through practical assignments.
 
 ---
 
-## 📖 About
+## 📌 Future Improvements
 
-This repository is maintained as part of my Web Programming coursework and serves as a reference for future web development projects.
+- Add screenshots for each lab.
+- Include deployment links for mini projects.
+- Add project documentation for each assignment.
+- Improve UI and responsiveness of existing projects.
 
 ---
 
@@ -125,4 +129,4 @@ This repository is maintained as part of my Web Programming coursework and serve
 
 ---
 
-⭐ If you found this repository useful, feel free to star it!
+⭐ If you find this repository helpful, consider giving it a star!
